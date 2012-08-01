@@ -4,9 +4,12 @@
 #include <stdio.h>
 #include "resource.h"
 #include "wnds.h"
+#include "gplib.h"
 
 const char g_szClassName[] = "myWindowClass";
 HWND hToolWindow;
+char file_name[100];
+CFG cfg;
 
 HWND hLabel, hButton;
 HWND hListBoxL, hCpuL, hGpuL;
@@ -34,9 +37,23 @@ HWND hHtHzL, hHtHz;
 HWND hCButton, hSysButton, hLoadButton, hGenButton;
 HWND hBkButton, hDefButton;
 
+HFONT hDefault;
+HBRUSH g_hbrBackground;
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 		case WM_CREATE:
+			{
+				//hDefault = GetStockObject(DEFAULT_GUI_FONT);
+				memset(file_name, 0, 100);
+				strcpy(file_name, "C:\\Program Files (x86)\\Infogrames\\Grand Prix 4\\f1graphics.cfg");
+				memset(cfg.file_name, 0, sizeof(cfg.file_name));
+				strcpy(cfg.file_name, file_name);
+				//read_file(&cfg);
+			}
+			{
+				hDefault = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+			}
 			{
 				hToolWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(ID_TOOLWINDOW), hwnd, ToolDlgProc);
 				if(hToolWindow == NULL) {
@@ -57,22 +74,28 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			{
 				hGlobalL = CreateLabel(hwnd, 20, 10, 200, 25, ID_GLOBALL);
 				SendMessage(hGlobalL, WM_SETTEXT, 0, (LPARAM) "Global setting");
+				SendMessage(hGlobalL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hGlobal = CreateComboBox(hwnd, 20, 50, 200, 200, ID_GLOBAL);
 				SendMessage(hGlobal, CB_ADDSTRING, 0, (LPARAM) "Global On");
 				SendMessage(hGlobal, CB_SETCURSEL, 0, 0);
+				SendMessage(hGlobal, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hWidthL = CreateLabel(hwnd, 260, 10, 200, 25, ID_WIDTHL);
 				SendMessage(hWidthL, WM_SETTEXT, 0, (LPARAM) "Horizontal resolution");
+				SendMessage(hWidthL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hWidth = CreateComboBox(hwnd, 260, 50, 200, 200, ID_WIDTH);
 				SendMessage(hWidth, CB_ADDSTRING, 0, (LPARAM) "1440");
 				SendMessage(hWidth, CB_SETCURSEL, 0, 0);
+				SendMessage(hWidth, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hHeightL = CreateLabel(hwnd, 500, 10, 200, 25, ID_HEIGHTL);
 				SendMessage(hHeightL, WM_SETTEXT, 0, (LPARAM) "Vertical resolution");
+				SendMessage(hHeightL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hHeight = CreateComboBox(hwnd, 500, 50, 200, 200, ID_HEIGHT);
 				SendMessage(hHeight, CB_ADDSTRING, 0, (LPARAM) "900");
+				SendMessage(hHeight, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				SendMessage(hHeight, CB_SETCURSEL, 0, 0);
 			}
 			/* ROW 1 Ends */
@@ -80,92 +103,116 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			{
 				hHWTnlL = CreateLabel(hwnd, 20, 100, 200, 25, ID_HWTNLL);
 				SendMessage(hHWTnlL, WM_SETTEXT, 0, (LPARAM) "Hardware T&L");
+				SendMessage(hHWTnlL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hHWTnl = CreateComboBox(hwnd, 20, 140, 200, 200, ID_HWTNL);
 				SendMessage(hHWTnl, CB_ADDSTRING, 0, (LPARAM) "Enabled");
 				SendMessage(hHWTnl, CB_SETCURSEL, 0, 0);
+				SendMessage(hHWTnl, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hWndMdL = CreateLabel(hwnd, 260, 100, 200, 25, ID_WNDMDL);
 				SendMessage(hWndMdL, WM_SETTEXT, 0, (LPARAM) "Window mode");
+				SendMessage(hWndMdL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hWndMd = CreateComboBox(hwnd, 260, 140, 200, 200, ID_WNDMD);
 				SendMessage(hWndMd, CB_ADDSTRING, 0, (LPARAM) "Full screen");
 				SendMessage(hWndMd, CB_SETCURSEL, 0, 0);
+				SendMessage(hWndMd, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hVSyncL = CreateLabel(hwnd, 500, 100, 200, 25, ID_VSYNCL);
 				SendMessage(hVSyncL, WM_SETTEXT, 0, (LPARAM) "Vync display");
+				SendMessage(hVSyncL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hVSync = CreateComboBox(hwnd, 500, 140, 200, 200, ID_VSYNC);
 				SendMessage(hVSync, CB_ADDSTRING, 0, (LPARAM) "900");
 				SendMessage(hVSync, CB_SETCURSEL, 0, 0);
+				SendMessage(hVSync, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			/* ROW 2 Ends */
 
 			{
 				hTexQL = CreateLabel(hwnd, 20, 190, 200, 25, ID_TEXQL);
 				SendMessage(hTexQL, WM_SETTEXT, 0, (LPARAM) "Texture quality");
+				SendMessage(hTexQL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hTexQ = CreateComboBox(hwnd, 20, 230, 200, 200, ID_TEXQ);
 				SendMessage(hTexQ, CB_ADDSTRING, 0, (LPARAM) "Ultra level");
 				SendMessage(hTexQ, CB_SETCURSEL, 0, 0);
+				SendMessage(hTexQ, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hBmpMpL = CreateLabel(hwnd, 260, 190, 200, 25, ID_BMPMPL);
 				SendMessage(hBmpMpL, WM_SETTEXT, 0, (LPARAM) "Bump mapping");
+				SendMessage(hBmpMpL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hBmpMp = CreateComboBox(hwnd, 260, 230, 200, 200, ID_BMPMP);
 				SendMessage(hBmpMp, CB_ADDSTRING, 0, (LPARAM) "Lighting");
 				SendMessage(hBmpMp, CB_SETCURSEL, 0, 0);
+				SendMessage(hBmpMp, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hMrrL = CreateLabel(hwnd, 500, 190, 200, 25, ID_MRRL);
 				SendMessage(hMrrL, WM_SETTEXT, 0, (LPARAM) "Mirrors");
+				SendMessage(hMrrL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hMrr = CreateComboBox(hwnd, 500, 230, 200, 200, ID_MRR);
 				SendMessage(hMrr, CB_ADDSTRING, 0, (LPARAM) "Present");
 				SendMessage(hMrr, CB_SETCURSEL, 0, 0);
+				SendMessage(hMrr, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			/* ROW 3 Ends */
 
 			{
 				hTrkMpL = CreateLabel(hwnd, 20, 280, 200, 25, ID_TRKMPL);
 				SendMessage(hTrkMpL, WM_SETTEXT, 0, (LPARAM) "Track maps");
+				SendMessage(hTrkMpL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hTrkMp = CreateComboBox(hwnd, 20, 320, 200, 200, ID_TRKMP);
 				SendMessage(hTrkMp, CB_ADDSTRING, 0, (LPARAM) "High quality");
 				SendMessage(hTrkMp, CB_SETCURSEL, 0, 0);
+				SendMessage(hTrkMp, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hEnvMpL = CreateLabel(hwnd, 260, 280, 200, 25, ID_ENVMPL);
 				SendMessage(hEnvMpL, WM_SETTEXT, 0, (LPARAM) "Environment mapping");
+				SendMessage(hEnvMpL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hEnvMp = CreateComboBox(hwnd, 260, 320, 200, 200, ID_ENVMP);
 				SendMessage(hEnvMp, CB_ADDSTRING, 0, (LPARAM) "Enabled");
 				SendMessage(hEnvMp, CB_SETCURSEL, 0, 0);
+				SendMessage(hEnvMp, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hTexFilQL = CreateLabel(hwnd, 500, 280, 200, 25, ID_TEXFILQL);
 				SendMessage(hTexFilQL, WM_SETTEXT, 0, (LPARAM) "Texture Filter Quality");
+				SendMessage(hTexFilQL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hTexFilQ = CreateComboBox(hwnd, 500, 320, 200, 200, ID_TEXFILQ);
 				SendMessage(hTexFilQ, CB_ADDSTRING, 0, (LPARAM) "Extreme level");
 				SendMessage(hTexFilQ, CB_SETCURSEL, 0, 0);
+				SendMessage(hTexFilQ, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			/* ROW 4 Ends */
 
 			{
 				hAnFilQL = CreateLabel(hwnd, 20, 370, 200, 25, ID_ANFILQL);
 				SendMessage(hAnFilQL, WM_SETTEXT, 0, (LPARAM) "Anisotropic filter quality");
+				SendMessage(hAnFilQL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hAnFilQ = CreateComboBox(hwnd, 20, 410, 200, 200, ID_ANFILQ);
 				SendMessage(hAnFilQ, CB_ADDSTRING, 0, (LPARAM) "Ultra level");
 				SendMessage(hAnFilQ, CB_SETCURSEL, 0, 0);
+				SendMessage(hAnFilQ, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hShdwL = CreateLabel(hwnd, 260, 370, 200, 25, ID_SHDWL);
 				SendMessage(hShdwL, WM_SETTEXT, 0, (LPARAM) "Shadows");
+				SendMessage(hShdwL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hShdw = CreateComboBox(hwnd, 260, 410, 200, 200, ID_SHDW);
 				SendMessage(hShdw, CB_ADDSTRING, 0, (LPARAM) "Enabled");
 				SendMessage(hShdw, CB_SETCURSEL, 0, 0);
+				SendMessage(hShdw, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
 				hShdwTpL = CreateLabel(hwnd, 500, 370, 200, 25, ID_SHDWTPL);
 				SendMessage(hShdwTpL, WM_SETTEXT, 0, (LPARAM) "Shadow type");
+				SendMessage(hShdwTpL, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 				hShdwTp = CreateComboBox(hwnd, 500, 410, 200, 200, ID_SHDWTP);
 				SendMessage(hShdwTp, CB_ADDSTRING, 0, (LPARAM) "Dynamic");
 				SendMessage(hShdwTp, CB_SETCURSEL, 0, 0);
+				SendMessage(hShdwTp, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			/* ROW 5 Ends */
 
@@ -205,26 +252,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			
 
 			// Buttons
-			/*{
-				hCButton = CreateButton(hwnd, 320, 320, 75, 25, ID_MYCBUTTON);
+			{
+				hCButton = CreateButton(hwnd, 320, 470, 75, 25, ID_MYCBUTTON);
 				SendMessage(hCButton, WM_SETTEXT, 0, (LPARAM) "Change");
+				SendMessage(hCButton, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
-				hSysButton = CreateButton(hwnd, 10, 390, 95, 25, ID_MYSYSBUTTON);
+				hSysButton = CreateButton(hwnd, 20, 470, 95, 25, ID_MYSYSBUTTON);
 				SendMessage(hSysButton, WM_SETTEXT, 0, (LPARAM) "System Info");
+				SendMessage(hSysButton, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
-				hLoadButton = CreateButton(hwnd, 320, 390, 75, 25, ID_MYLOADBUTTON);
+				hLoadButton = CreateButton(hwnd, 320, 470, 75, 25, ID_MYLOADBUTTON);
 				SendMessage(hLoadButton, WM_SETTEXT, 0, (LPARAM) "Load file");
+				SendMessage(hLoadButton, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
-				hDefButton = CreateButton(hwnd, 400, 390, 75, 25, ID_MYDEFBUTTON);
+				hDefButton = CreateButton(hwnd, 400, 470, 75, 25, ID_MYDEFBUTTON);
 				SendMessage(hDefButton, WM_SETTEXT, 0, (LPARAM) "Defaults");
+				SendMessage(hDefButton, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
 			}
 			{
-				hGenButton = CreateButton(hwnd, 480, 390, 95, 25, ID_MYGENBUTTON);
+				hGenButton = CreateButton(hwnd, 480, 470, 95, 25, ID_MYGENBUTTON);
 				SendMessage(hGenButton, WM_SETTEXT, 0, (LPARAM) "Generate file");
-			}*/
+				SendMessage(hGenButton, WM_SETFONT, (WPARAM) hDefault, MAKELPARAM(0, FALSE));
+			}
 			/*{
 				hButton = CreateButton(hwnd, 10, 50, 80, 25, ID_MYBUTTON);
 				SendMessage(hButton, WM_SETTEXT, 0, (LPARAM) "Submit");

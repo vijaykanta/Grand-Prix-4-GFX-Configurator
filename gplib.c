@@ -171,14 +171,16 @@ void read_file(CFG *cfg) {
 	}
 	fclose(cfg->fp);
 
-	printf("Now creating backup file..\n");
+	//printf("Now creating backup file..\n");
+	
 	handler = fopen("f1graphics.cfg.backup", "w");
 	if(handler) {
 		for(num=0; num<cfg->tot_lines; num++) {
 			fprintf(handler, "%s\n", cfg->all_lines[num]);
 		}
 		fclose(handler);
-		printf("Created backup file successfully..\n");
+		//printf("Created backup file successfully..\n");
+		MessageBox(NULL, "Backup file created successfully!", "Notice", MB_OK);
 	}
 
 	init_vals(cfg);
